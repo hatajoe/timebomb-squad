@@ -20,7 +20,7 @@ html
           $("#message").html(html + '<br>');
         });
         socket.on('disconnect', function(message){
-          $("#message").append('切断されました');
+          $("#message").append('disconnected');
         });
       });
   body
