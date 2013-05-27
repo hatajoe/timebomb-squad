@@ -1,15 +1,20 @@
 /**
  * timebomb.js
  */
-var url = 'http://localhost:3000';
+var url = 'http://timebombsquad.herokuapp.com';
 var util   = require('util'),
     async  = require('async'),
     spawn  = require('child_process').spawn,
     exec   = require('child_process').exec,
     client = require('socket.io-client'),
+    os     = require('os'),
     socket = client.connect(url);
 
+var PREV_CPU_USAGE;
+
 socket.on('connect', function (){
+
+    console.log('connect ' + url);
 
     socket.on('disconnect', function () {
 
@@ -24,30 +29,67 @@ socket.on('connect', function (){
         async.parallel([
 
             /**
-             * w
+             * uptime
              */
             function(callback) {
 
-                var w = exec('w', []);
+                var parser = require('./parser/uptime.js');
+                var uptime = exec('uptime', []);
 
-                w.stdout.on('data', function(data) {
+                uptime.stdout.on('data', function(data) {
                     callback(null, {
-                        name: 'w',
+                        name: 'uptime',
+                        data: parser.parse(data)
+                    });
+                });
+
+                uptime.stderr.on('data', function(data) {
+                    console.log('uptime stderr: ' + data);
+                    callback(null, {
+                        name: 'uptime',
                         data: data
                     });
                 });
 
-                w.stderr.on('data', function(data) {
-                    console.log('w stderr: ' + data);
-                    callback(null, {
-                        name: 'w',
-                        data: data
-                    });
-                });
-
-                w.on('exit', function(code) {
+                uptime.on('exit', function(code) {
                     if (code !== 0) {
-                        console.log('w process exited with code ' + code);
+                        console.log('uptime process exited with code ' + code);
+                    }
+                });
+            },
+            /**
+             * cat /proc/stat
+             */
+            function(callback) {
+
+                var parser = require('./parser/proc_stat.js');
+                var cat = exec('cat /proc/stat', []);
+
+                cat.stdout.on('data', function(data) {
+
+                    if (undefined === PREV_CPU_USAGE) {
+                        PREV_CPU_USAGE = data;
+                    }
+
+                    callback(null, {
+                        name: 'cpu',
+                        data: parser.parse(data, PREV_CPU_USAGE)
+                    });
+
+                    PREV_CPU_USAGE = data;
+                });
+
+                cat.stderr.on('data', function(data) {
+                    console.log('cat /proc/stat stderr: ' + data);
+                    callback(null, {
+                        name: 'cpu',
+                        data: data
+                    });
+                });
+
+                cat.on('exit', function(code) {
+                    if (code !== 0) {
+                        console.log('cat /proc/stat process exited with code ' + code);
                     }
                 });
             },
@@ -56,12 +98,13 @@ socket.on('connect', function (){
              */
             function(callback) {
 
+                var parser = require('./parser/free.js');
                 var free = exec('free', []);
 
                 free.stdout.on('data', function(data) {
                     callback(null, {
                         name: 'free',
-                        data: data
+                        data: parser.parse(data)
                     });
                 });
 
@@ -84,12 +127,13 @@ socket.on('connect', function (){
              */
             function(callback) {
 
+                var parser = require('./parser/df.js');
                 var df = exec('df', []);
 
                 df.stdout.on('data', function(data) {
                     callback(null, {
                         name: 'df',
-                        data: data
+                        data: parser.parse(data)
                     });
                 });
 
@@ -112,6 +156,7 @@ socket.on('connect', function (){
              */
             function(callback) {
 
+                var parser = require('./parser/netstat.js');
                 var netstat = exec('netstat', ['an']),
                     wc      = exec('wc'     , ['-l']);
 
@@ -133,7 +178,7 @@ socket.on('connect', function (){
                 wc.stdout.on('data', function(data) {
                     callback(null, {
                         name: 'netstat',
-                        data: data
+                        data: parser.parse(data)
                     });
                 });
 
@@ -152,7 +197,11 @@ socket.on('connect', function (){
                 });
             }], function(err, results) {
 
-                var serialized = JSON.stringify(results);
+                var res = {
+                    host  : os.hostname(),
+                    result: results
+                };
+                var serialized = JSON.stringify(res);
                 socket.send(serialized);
             });
 
