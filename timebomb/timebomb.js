@@ -2,14 +2,14 @@
  * timebomb.js
  */
 var url = 'http://localhost:3000';
-var client = require('socket.io-client'),
+var util   = require('util'),
+    async  = require('async'),
+    spawn  = require('child_process').spawn,
+    exec   = require('child_process').exec,
+    client = require('socket.io-client'),
     socket = client.connect(url);
 
-console.log('connect ' + url);
-
 socket.on('connect', function (){
-
-    console.log('connect ' + url);
 
     socket.on('disconnect', function () {
 
@@ -21,117 +21,140 @@ socket.on('connect', function (){
 
     setInterval(function () {
 
-        var spawn   = require('child_process').spawn,
-            exec    = require('child_process').exec,
-            uptime  = exec('uptime' , []),
-            w       = exec('w'      , []),
-            free    = exec('free'   , []),
-            df      = exec('df'     , []),
-            netstat = spawn('netstat', ['an']),
-            wc      = spawn('wc'   , ['-l']);
+        async.parallel([
 
-        /**
-         * uptime
-         */
-        uptime.stdout.on('data', function(data) {
-            socket.send(data);
-        });
+            /**
+             * w
+             */
+            function(callback) {
 
-        uptime.stderr.on('data', function(data) {
-            console.log('uptime stderr: ' + data);
-        });
-        
-        uptime.on('exit', function(code) {
-            if (code !== 0) {
-                console.log('uptime process exited with code ' + code);
-            }
-        });
+                var w = exec('w', []);
 
-        /**
-         * w
-         */
-        w.stdout.on('data', function(data) {
-            socket.send(data);
-        });
+                w.stdout.on('data', function(data) {
+                    callback(null, {
+                        name: 'w',
+                        data: data
+                    });
+                });
 
-        w.stderr.on('data', function(data) {
-            console.log('w stderr: ' + data);
-        });
-        
-        w.on('exit', function(code) {
-            if (code !== 0) {
-                console.log('w process exited with code ' + code);
-            }
-        });
+                w.stderr.on('data', function(data) {
+                    console.log('w stderr: ' + data);
+                    callback(null, {
+                        name: 'w',
+                        data: data
+                    });
+                });
 
-        /**
-         * free
-         */
-        free.stdout.on('data', function(data) {
-            socket.send(data);
-        });
+                w.on('exit', function(code) {
+                    if (code !== 0) {
+                        console.log('w process exited with code ' + code);
+                    }
+                });
+            },
+            /**
+             * free
+             */
+            function(callback) {
 
-        free.stderr.on('data', function(data) {
-            console.log('free stderr: ' + data);
-        });
-        
-        free.on('exit', function(code) {
-            if (code !== 0) {
-                console.log('free process exited with code ' + code);
-            }
-        });
+                var free = exec('free', []);
 
-        /**
-         * df
-         */
-        df.stdout.on('data', function(data) {
-            socket.send(data);
-        });
+                free.stdout.on('data', function(data) {
+                    callback(null, {
+                        name: 'free',
+                        data: data
+                    });
+                });
 
-        df.stderr.on('data', function(data) {
-            console.log('df stderr: ' + data);
-        });
-        
-        df.on('exit', function(code) {
-            if (code !== 0) {
-                console.log('df process exited with code ' + code);
-            }
-        });
+                free.stderr.on('data', function(data) {
+                    console.log('free stderr: ' + data);
+                    callback(null, {
+                        name: 'free',
+                        data: data
+                    });
+                });
 
-        /**
-         * netstat
-         */
-        netstat.stdout.on('data', function(data) {
-            wc.stdin.write(data);
-        });
+                free.on('exit', function(code) {
+                    if (code !== 0) {
+                        console.log('free process exited with code ' + code);
+                    }
+                });
+            },
+            /**
+             * df
+             */
+            function(callback) {
 
-        netstat.stderr.on('data', function(data) {
-            console.log('netstat stderr: ' + data);
-        });
-        
-        netstat.on('exit', function(code) {
-            if (code !== 0) {
-                console.log('netstat process exited with code ' + code);
-            }
-            wc.stdin.end();
-        });
+                var df = exec('df', []);
 
-        /**
-         * wc
-         */
-        wc.stdout.on('data', function(data) {
-            socket.send(data);
-        });
+                df.stdout.on('data', function(data) {
+                    callback(null, {
+                        name: 'df',
+                        data: data
+                    });
+                });
 
-        wc.stderr.on('data', function(data) {
-            console.log('wc stderr: ' + data);
-        });
-        
-        wc.on('exit', function(code) {
-            if (code !== 0) {
-                console.log('wc process exited with code ' + code);
-            }
-        });
+                df.stderr.on('data', function(data) {
+                    console.log('df stderr: ' + data);
+                    callback(null, {
+                        name: 'df',
+                        data: data
+                    });
+                });
+
+                df.on('exit', function(code) {
+                    if (code !== 0) {
+                        console.log('df process exited with code ' + code);
+                    }
+                });
+            },
+            /**
+             * netstat & wc
+             */
+            function(callback) {
+
+                var netstat = exec('netstat', ['an']),
+                    wc      = exec('wc'     , ['-l']);
+
+                netstat.stdout.on('data', function(data) {
+                    wc.stdin.write(data);
+                });
+
+                netstat.stderr.on('data', function(data) {
+                    console.log('netstat stderr: ' + data);
+                });
+
+                netstat.on('exit', function(code) {
+                    if (code !== 0) {
+                        console.log('netstat process exited with code ' + code);
+                    }
+                    wc.stdin.end();
+                });
+
+                wc.stdout.on('data', function(data) {
+                    callback(null, {
+                        name: 'netstat',
+                        data: data
+                    });
+                });
+
+                wc.stderr.on('data', function(data) {
+                    console.log('wc stderr: ' + data);
+                    callback(null, {
+                        name: 'netstat',
+                        data: data
+                    });
+                });
+
+                wc.on('exit', function(code) {
+                    if (code !== 0) {
+                        console.log('wc process exited with code ' + code);
+                    }
+                });
+            }], function(err, results) {
+
+                var serialized = JSON.stringify(results);
+                socket.send(serialized);
+            });
 
     }, 1000);
 

@@ -10,6 +10,7 @@
   "author": "Yusuke Hatanaka",
   "license": "BSD",
   "dependencies": {
-    "socket.io-client": "~0.9.11"
+    "socket.io-client": "~0.9.11",
+    "async": "~0.2.8"
   }
 }
