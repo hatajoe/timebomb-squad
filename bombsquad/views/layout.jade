@@ -19,21 +19,21 @@ html
 
             html += '[' + data.name + ']';
 
-            if (key === 'uptime') {
+            if (data.name === 'uptime') {
               html += 'uptime      : ' + data.data.time  + '<br />';
               html += 'load average: ' + data.data.avg1  + '<br />';
               html += 'load average: ' + data.data.avg2  + '<br />';
               html += 'load average: ' + data.data.avg3  + '<br />';
               html += '<br />';
 
-            } else if (key === 'cpu') {
+            } else if (data.name === 'cpu') {
               html += 'user: ' + data.data.user  + '<br />';
               html += 'nice: ' + data.data.nice  + '<br />';
               html += 'sys : ' + data.data.sys   + '<br />';
               html += 'idle: ' + data.data.idle  + '<br />';
               html += '<br />';
 
-            } else if (key === 'free') {
+            } else if (data.name === 'free') {
               html += 'mem total : ' + data.data.mem.total + '<br />';
               html += 'mem used  : ' + data.data.mem.used  + '<br />';
               html += 'mem free  : ' + data.data.mem.free  + '<br />';
@@ -44,7 +44,7 @@ html
               html += 'swap free : ' + data.data.sys.free  + '<br />';
               html += '<br />';
 
-            } else if (key === 'df') {
+            } else if (data.name === 'df') {
               jQuery.each(data.data, function (key, elem) {
                 html += '(' + elem.dev + ')<br />';
                 html += '(' + 'total     : ' + elem.total     + ')<br />';
@@ -55,7 +55,7 @@ html
               });
               html += '<br />';
 
-            } else if (key === 'netstat') {
+            } else if (data.name === 'netstat') {
               html += 'connections: ' + data.data.connections + '<br />';
               html += '<br />';
             }
@@ -68,3 +68,4 @@ html
       });
   body
     block content
+
