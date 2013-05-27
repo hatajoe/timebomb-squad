@@ -12,7 +12,12 @@ html
         var i = 1;
 
         socket.on('message', function(message){
-          $("#message").html(message + '<br>');
+          var json = jQuery.parseJSON(message);
+          var html = '';
+          jQuery.each(json, function(key, data) {
+             html += data.name + ': '  + data.data  + '<br />';
+          });
+          $("#message").html(html + '<br>');
         });
         socket.on('disconnect', function(message){
           $("#message").append('切断されました');
