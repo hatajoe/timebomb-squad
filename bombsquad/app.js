@@ -32,8 +32,9 @@ if ('development' == app.get('env')) {
 app.get('/', routes.index);
 app.get('/users', user.list);
 
-server.listen(3000);
-console.log('Server running at http://127.0.0.1:3000/');
+var port = process.env.PORT || 3000;
+server.listen(port);
+console.log('Server running at http://timebombsquad.herokuapp.com:' + port + '/');
 
 io.sockets.on('connection', function(client) {
     console.log('connection');
