@@ -13,9 +13,52 @@ html
 
         socket.on('message', function(message){
           var json = jQuery.parseJSON(message);
+
           var html = '';
           jQuery.each(json, function(key, data) {
-             html += data.name + ': '  + data.data  + '<br />';
+
+            html += '[' + data.name + ']';
+
+            if (key === 'uptime') {
+              html += 'uptime      : ' + data.data.time  + '<br />';
+              html += 'load average: ' + data.data.avg1  + '<br />';
+              html += 'load average: ' + data.data.avg2  + '<br />';
+              html += 'load average: ' + data.data.avg3  + '<br />';
+              html += '<br />';
+
+            } else if (key === 'cpu') {
+              html += 'user: ' + data.data.user  + '<br />';
+              html += 'nice: ' + data.data.nice  + '<br />';
+              html += 'sys : ' + data.data.sys   + '<br />';
+              html += 'idle: ' + data.data.idle  + '<br />';
+              html += '<br />';
+
+            } else if (key === 'free') {
+              html += 'mem total : ' + data.data.mem.total + '<br />';
+              html += 'mem used  : ' + data.data.mem.used  + '<br />';
+              html += 'mem free  : ' + data.data.mem.free  + '<br />';
+              html += 'cache used: ' + data.data.cache.used  + '<br />';
+              html += 'cache free: ' + data.data.cache.free  + '<br />';
+              html += 'swap total: ' + data.data.sys.total + '<br />';
+              html += 'swap used : ' + data.data.sys.used  + '<br />';
+              html += 'swap free : ' + data.data.sys.free  + '<br />';
+              html += '<br />';
+
+            } else if (key === 'df') {
+              jQuery.each(data.data, function (key, elem) {
+                html += '(' + elem.dev + ')<br />';
+                html += '(' + 'total     : ' + elem.total      + ')<br />';
+                html += '(' + 'used      : ' + elem.used       + ')<br />';
+                html += '(' + 'available : ' + elem.available. + ')<br />';
+                html += '(' + 'use       : ' + elem.use        + ')<br />';
+                html += '(' + 'mount     : ' + elem.mount      + ')<br />';
+              });
+              html += '<br />';
+
+            } else if (key === 'netstat') {
+              html += 'connections: ' + data.data.connections + '<br />';
+              html += '<br />';
+            }
           });
           $("#message").html(html + '<br>');
         });
