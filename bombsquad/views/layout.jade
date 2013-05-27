@@ -14,10 +14,10 @@ html
         socket.on('message', function(message){
           var json = jQuery.parseJSON(message);
 
-          var html = '';
-          jQuery.each(json, function(key, data) {
+          var html = 'HOST: ' + json.host + '<br />';
+          jQuery.each(json.result, function(key, data) {
 
-            html += '[' + data.name + ']';
+            html += '[' + data.name + ']<br />';
 
             if (data.name === 'uptime') {
               html += 'uptime      : ' + data.data.time  + '<br />';
@@ -47,11 +47,11 @@ html
             } else if (data.name === 'df') {
               jQuery.each(data.data, function (key, elem) {
                 html += '(' + elem.dev + ')<br />';
-                html += '(' + 'total     : ' + elem.total     + ')<br />';
-                html += '(' + 'used      : ' + elem.used      + ')<br />';
-                html += '(' + 'available : ' + elem.available + ')<br />';
-                html += '(' + 'use       : ' + elem.use       + ')<br />';
-                html += '(' + 'mount     : ' + elem.mount     + ')<br />';
+                html += 'total     : ' + elem.total     + '<br />';
+                html += 'used      : ' + elem.used      + '<br />';
+                html += 'available : ' + elem.available + '<br />';
+                html += 'use       : ' + elem.use       + '<br />';
+                html += 'mount     : ' + elem.mount     + '<br />';
               });
               html += '<br />';
 
