@@ -54,6 +54,7 @@ html
               html += '</div>';
 
             } else if (data.name === 'df') {
+
               jQuery.each(data.data, function (key, elem) {
                 html += '<div class="span2">';
                 html += '[' + data.name + ']<br />';
@@ -64,7 +65,6 @@ html
                 html += 'use       : ' + elem.use       + '<br />';
                 html += 'mount     : ' + elem.mount     + '<br />';
                 html += '</div>';
-                html += '</div></div>';
               });
 
             } else if (data.name === 'netstat') {
