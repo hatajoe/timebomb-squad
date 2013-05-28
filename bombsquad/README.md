@@ -11,5 +11,8 @@ install
 browse
 --------
 
+see also https://github.com/Hatajoe/timebomb
+
 install 'timebomb' to some node and run.
+
 bombsquad show 'timebomb' stat on your browser.   
