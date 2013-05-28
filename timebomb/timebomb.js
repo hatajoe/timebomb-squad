@@ -168,11 +168,16 @@ socket.on('connect', function (){
             function(callback) {
 
                 var parser = require('./parser/netstat.js');
-                var netstat = exec('netstat', ['-an']),
-                    wc      = spawn('wc'     , ['-l']);
+                var netstat = exec('netstat -an | wc -l', []);
+                // var netstat = exec('netstat', ['-an']),
+                //     wc      = spawn('wc'     , ['-l']);
 
                 netstat.stdout.on('data', function(data) {
-                    wc.stdin.write(data);
+                    callback(null, {
+                        name: 'netstat',
+                        data: parser.parse(data)
+                    });
+                    // wc.stdin.write(data);
                 });
 
                 netstat.stderr.on('data', function(data) {
@@ -183,29 +188,29 @@ socket.on('connect', function (){
                     if (code !== 0) {
                         console.log('netstat process exited with code ' + code);
                     }
-                    wc.stdin.end();
+                    // wc.stdin.end();
                 });
 
-                wc.stdout.on('data', function(data) {
-                    callback(null, {
-                        name: 'netstat',
-                        data: data.toString()
-                    });
-                });
+                // wc.stdout.on('data', function(data) {
+                //     callback(null, {
+                //         name: 'netstat',
+                //         data: data.toString()
+                //     });
+                // });
 
-                wc.stderr.on('data', function(data) {
-                    console.log('wc stderr: ' + data);
-                    callback(null, {
-                        name: 'netstat',
-                        data: data
-                    });
-                });
+                // wc.stderr.on('data', function(data) {
+                //     console.log('wc stderr: ' + data);
+                //     callback(null, {
+                //         name: 'netstat',
+                //         data: data
+                //     });
+                // });
 
-                wc.on('exit', function(code) {
-                    if (code !== 0) {
-                        console.log('wc process exited with code ' + code);
-                    }
-                });
+                // wc.on('exit', function(code) {
+                //     if (code !== 0) {
+                //         console.log('wc process exited with code ' + code);
+                //     }
+                // });
 
             }], function(err, results) {
 
