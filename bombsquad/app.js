@@ -34,7 +34,7 @@ app.get('/users', user.list);
 
 var port = process.env.PORT || 3000;
 server.listen(port);
-console.log('Server running at http://timebombsquad.herokuapp.com:' + port + '/');
+console.log('Server running port at ' + port);
 
 io.sockets.on('connection', function(client) {
     console.log('connection');
