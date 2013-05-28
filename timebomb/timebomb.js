@@ -4,7 +4,7 @@
 
 var fs = require('fs');
 var config;
-fs.readFile('./conf.json', function (err, data) {
+fs.readFile('./config.json', function (err, data) {
 
     if (err) {
         throw err;
