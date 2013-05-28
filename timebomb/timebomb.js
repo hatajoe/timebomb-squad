@@ -33,7 +33,6 @@ socket.on('connect', function (){
         console.log('disconnect ' + url);
 
         socket.disconnect();
-        process.exit(0);
     });
 
     setInterval(function () {
@@ -215,7 +214,16 @@ socket.on('connect', function (){
                 };
                 var serialized = JSON.stringify(res);
                 // console.log(serialized);
-                socket.send(serialized);
+
+                if (!socket) {
+                    socket = client.connect(url);
+                    console.log('reconnect ' + url);
+                    console.log('check interval ' + interval);
+                }
+
+                if (socket) {
+                    socket.send(serialized);
+                }
             });
 
     }, interval);
