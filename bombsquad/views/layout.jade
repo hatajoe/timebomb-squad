@@ -23,7 +23,7 @@ html
           jQuery.each(json.result, function(key, data) {
 
             if (data.name === 'uptime') {
-              html += '<div class="span2">';
+              html += '<div class="span1">';
               html += '[' + data.name + ']<br />';
               html += 'uptime : ' + data.data.time  + '<br />';
               html += 'loadavg: ' + data.data.avg1  + '<br />';
@@ -32,7 +32,7 @@ html
               html += '</div>';
 
             } else if (data.name === 'cpu') {
-              html += '<div class="span2">';
+              html += '<div class="span1">';
               html += '[' + data.name + ']<br />';
               html += 'user: ' + data.data.user  + '<br />';
               html += 'nice: ' + data.data.nice  + '<br />';
@@ -41,7 +41,7 @@ html
               html += '</div>';
 
             } else if (data.name === 'free') {
-              html += '<div class="span2">';
+              html += '<div class="span1">';
               html += '[' + data.name + ']<br />';
               html += 'mem total : ' + data.data.mem.total + '<br />';
               html += 'mem used  : ' + data.data.mem.used  + '<br />';
@@ -54,12 +54,12 @@ html
               html += '</div>';
 
             } else if (data.name === 'df') {
-              html += '<div class="span4">';
+              html += '<div class="span8">';
               html += '[' + data.name + ']<br />';
 
               html += '<div class="row-fluid">';
               jQuery.each(data.data, function (key, elem) {
-                html += '<div class="span1">';
+                html += '<div class="span2">';
                 html += '(' + elem.dev + ')<br />';
                 html += 'total     : ' + elem.total     + '<br />';
                 html += 'used      : ' + elem.used      + '<br />';
@@ -71,7 +71,7 @@ html
               html += '</div></div>';
 
             } else if (data.name === 'netstat') {
-              html += '<div class="span2">';
+              html += '<div class="span1">';
               html += '[' + data.name + ']<br />';
               html += 'connections: ' + data.data.connections + '<br />';
               html += '</div>';
