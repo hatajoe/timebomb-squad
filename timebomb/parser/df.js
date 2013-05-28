@@ -10,6 +10,10 @@ exports.parse = function(data) {
     var res = new Array();
     lines.forEach(function (line) {
 
+        if (line === '') {
+            return;
+        }
+
         var elem = line.split(/\s+/);
 
         if (elem[0] === 'Filesystem') {
