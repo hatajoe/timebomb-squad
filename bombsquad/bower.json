@@ -2,6 +2,7 @@
   "name": "bombsquad",
   "version": "0.0.0",
   "dependencies": {
-    "jquery": "~2.0.0"
+    "jquery": "~2.0.0",
+    "bootstrap": "~2.3.2"
   }
 }

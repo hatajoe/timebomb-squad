@@ -4,12 +4,14 @@ html
     title= title
     link(rel='stylesheet', href='/stylesheets/style.css')
     script(type='text/javascript', src='javascripts/components/jquery/jquery.min.js')
+    script(type='text/javascript', src='javascripts/components/bootstrap/bootstrap/js/bootstrap.min.js')
+    link(rel='stylesheet', href='javascripts/components/bootstrap/bootstrap/css/bootstrap-responsive.min.css')
     script(type='text/javascript', src='/socket.io/socket.io.js')
     script(type='text/javascript')
       $(function() {
-        var socket = io.connect('http://timebombsquad.herokuapp.com');
+        var socket = io.connect(location.href);
 
-        var i = 1;
+        var clients = new Array();
 
         socket.on('message', function(message){
           var json = jQuery.parseJSON(message);
@@ -60,11 +62,25 @@ html
               html += '<br />';
             }
           });
-          $("#message").html(html + '<br>');
+
+          if (clients[json.host]) {
+
+            $('#' + json.host).html(html + '<br>');
+
+          } else {
+
+            html = '<div id="' + json.host + '">' + html + '</div>';
+            $("#message").append(html + '<br>');
+          }
+
+          clients[json.host] = 1;
+
         });
+
         socket.on('disconnect', function(message){
           $("#message").append('disconnected');
         });
+
       });
   body
     block content
