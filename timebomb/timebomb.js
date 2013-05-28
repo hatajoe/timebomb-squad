@@ -168,8 +168,8 @@ socket.on('connect', function (){
             function(callback) {
 
                 var parser = require('./parser/netstat.js');
-                var netstat = exec('netstat', ['an']),
-                    wc      = exec('wc'     , ['-l']);
+                var netstat = spawn('netstat', ['an']),
+                    wc      = spawn('wc'     , ['-l']);
 
                 netstat.stdout.on('data', function(data) {
                     wc.stdin.write(data);
@@ -189,7 +189,7 @@ socket.on('connect', function (){
                 wc.stdout.on('data', function(data) {
                     callback(null, {
                         name: 'netstat',
-                        data: parser.parse(data)
+                        data: data.toString()
                     });
                 });
 
@@ -206,6 +206,7 @@ socket.on('connect', function (){
                         console.log('wc process exited with code ' + code);
                     }
                 });
+
             }], function(err, results) {
 
                 var res = {
