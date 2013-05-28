@@ -3,7 +3,8 @@
   "version": "0.0.1",
   "private": true,
   "scripts": {
-    "postinstall": "./node_modules/bower/bin/bower install && cd ./public/javascripts/components/bootstrap && npm install && make bootstrap"
+
+    "postinstall": "./node_modules/bower/bin/bower install && cd ./public/javascripts/components/bootstrap && make bootstrap"
   },
   "dependencies": {
     "express": "3.2.4",
@@ -11,6 +12,10 @@
     "stylus": "*",
     "socket.io": "~0.9.14",
     "bower": "~0.9.2",
-    "npm": "~1.2.23"
+    "hogan.js": "~2.0.0",
+    "uglify-js": "~2.3.6",
+    "recess": "~1.1.6",
+    "connect": "~2.7.10",
+    "jshint": "~2.1.2"
   }
 }
