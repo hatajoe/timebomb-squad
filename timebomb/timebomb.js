@@ -202,6 +202,7 @@ socket.on('connect', function (){
                     result: results
                 };
                 var serialized = JSON.stringify(res);
+                console.log(serialized);
                 socket.send(serialized);
             });
 
