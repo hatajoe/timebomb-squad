@@ -23,7 +23,7 @@ html
           jQuery.each(json.result, function(key, data) {
 
             if (data.name === 'uptime') {
-              html += '<div class="span1">';
+              html += '<div class="span2">';
               html += '[' + data.name + ']<br />';
               html += 'uptime : ' + data.data.time  + '<br />';
               html += 'loadavg: ' + data.data.avg1  + '<br />';
@@ -54,12 +54,9 @@ html
               html += '</div>';
 
             } else if (data.name === 'df') {
-              html += '<div class="span6">';
-              html += '[' + data.name + ']<br />';
-
-              html += '<div class="row-fluid">';
               jQuery.each(data.data, function (key, elem) {
                 html += '<div class="span2">';
+                html += '[' + data.name + ']<br />';
                 html += '(' + elem.dev + ')<br />';
                 html += 'total     : ' + elem.total     + '<br />';
                 html += 'used      : ' + elem.used      + '<br />';
@@ -67,8 +64,8 @@ html
                 html += 'use       : ' + elem.use       + '<br />';
                 html += 'mount     : ' + elem.mount     + '<br />';
                 html += '</div>';
+                html += '</div></div>';
               });
-              html += '</div></div>';
 
             } else if (data.name === 'netstat') {
               html += '<div class="span1">';
