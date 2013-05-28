@@ -168,7 +168,7 @@ socket.on('connect', function (){
             function(callback) {
 
                 var parser = require('./parser/netstat.js');
-                var netstat = spawn('netstat', ['-an']),
+                var netstat = exec('netstat', ['-an']),
                     wc      = spawn('wc'     , ['-l']);
 
                 netstat.stdout.on('data', function(data) {
