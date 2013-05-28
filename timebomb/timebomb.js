@@ -2,24 +2,18 @@
  * timebomb.js
  */
 
-var fs = require('fs');
-var config;
-fs.readFile('./config.json', function (err, data) {
+var util = require('util'),
+    fs   = require('fs');
 
-    if (err) {
-        throw err;
-    }
-
-    var str = data.toString('utf8');
-    config = JSON.parse(str);
-});
-
+var config = JSON.parse(fs.readFileSync('./config.json'));
+if (config === undefined) {
+    throw 'failed to parse ./config.json';
+}
 
 var url = config.server || 'localhost:3000';
 var interval = config.interval || 1000;
 
-var util   = require('util'),
-    async  = require('async'),
+var async  = require('async'),
     spawn  = require('child_process').spawn,
     exec   = require('child_process').exec,
     client = require('socket.io-client'),
@@ -32,6 +26,7 @@ var PREV_CPU_USAGE;
 socket.on('connect', function (){
 
     console.log('connect ' + url);
+    console.log('check interval ' + interval);
 
     socket.on('disconnect', function () {
 
