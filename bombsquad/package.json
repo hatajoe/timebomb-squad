@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
 
-    "postinstall": "./node_modules/bower/bin/bower install && cd ./public/javascripts/components/bootstrap && make bootstrap"
+    "postinstall": "./node_modules/bower/bin/bower install"
   },
   "dependencies": {
     "express": "3.2.4",
