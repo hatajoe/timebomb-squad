@@ -6,13 +6,24 @@ exports.parse = function(data) {
 
     var lines = data.split('\n');
 
+    var buf = undefined;
     var res = new Array();
     lines.forEach(function (line) {
 
         var elem = line.split(/\s+/);
 
-        if (elem[0] === 'Filesystem' || elem[0] === '') {
+        if (elem[0] === 'Filesystem') {
             return;
+        }
+
+        if (elem[0] && !elem[1]) {
+            buf = elem[0];
+            return;
+        }
+
+        if (buf) {
+            elem[0] = buf;
+            buf = undefined;
         }
 
         res.push({
