@@ -4,8 +4,11 @@ timebomb
 timebomb
 
 % git clone http://github.com/Hatajoe/timebomb.git
+
 % cd timebomb
+
 % npm install
+
 % node timebonb.js >/dev/null 2>&1 &
 
 
