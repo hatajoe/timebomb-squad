@@ -1,7 +1,23 @@
 /**
  * timebomb.js
  */
-var url = 'http://timebombsquad.herokuapp.com';
+
+var fs = require('fs');
+var config;
+fs.readFile('./conf.json', function (err, data) {
+
+    if (err) {
+        throw err;
+    }
+
+    var str = data.toString('utf8');
+    config = JSON.parse(str);
+});
+
+
+var url = config.server || 'localhost:3000';
+var interval = config.interval || 1000;
+
 var util   = require('util'),
     async  = require('async'),
     spawn  = require('child_process').spawn,
@@ -9,6 +25,7 @@ var util   = require('util'),
     client = require('socket.io-client'),
     os     = require('os'),
     socket = client.connect(url);
+
 
 var PREV_CPU_USAGE;
 
@@ -202,10 +219,10 @@ socket.on('connect', function (){
                     result: results
                 };
                 var serialized = JSON.stringify(res);
-                console.log(serialized);
+                // console.log(serialized);
                 socket.send(serialized);
             });
 
-    }, 1000);
+    }, interval);
 
 });
