@@ -6,8 +6,11 @@
 var express = require('express')
   , routes = require('./routes')
   , user = require('./routes/user')
-  , http = require('http')
-  , app = express()
+  , http = require('http');
+
+http.globalAgent.maxSockets = 1024;
+
+var app = express()
   , server = http.createServer(app)
   , io = require('socket.io').listen(server)
   , path = require('path');
@@ -39,6 +42,7 @@ console.log('Server running port at ' + port);
 io.sockets.on('connection', function(client) {
     console.log('connection');
 	client.on('message', function(msg) {
+        
 		client.send(msg);
 		client.broadcast.emit('message', msg);
 	});
