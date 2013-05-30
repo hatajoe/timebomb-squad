@@ -1,0 +1,15 @@
+#!/usr/bin/perl --
+
+use strict;
+use warnings;
+
+my $cmd = "node app.js >log 2>&1";
+
+# endress reconnect
+while (1) {
+
+    my $ret = system($cmd);
+
+    sleep(1);
+}
+

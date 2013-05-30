@@ -16,8 +16,8 @@ var interval = config.interval || 1000;
 var async  = require('async'),
     spawn  = require('child_process').spawn,
     exec   = require('child_process').exec,
-    client = require('socket.io-client'),
     os     = require('os'),
+    client = require('socket.io-client'),
     socket = client.connect(url);
 
 
