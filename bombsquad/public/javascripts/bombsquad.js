@@ -1,86 +1,138 @@
+/**
+ * Model
+ */
+var Server = Backbone.Model.extend({
+    defaults: {
+        "host": '',
+        "uptime": 0,
+        "cpu": 0,
+        "free": 0,
+        "df": 0,
+        "netstat": 0,
+        "is_first": 0
+    },
+    initialize: function() {
+    }
+});
+
+var Servers = Backbone.Collection.extend({
+    model: Server
+});
+
+/**
+ * View
+ */
+var ServerView = Backbone.View.extend({
+    initialize: function (options) {
+        _.bindAll(this, "render", "remove");
+
+        this.model.bind("change", this.render);
+        this.model.bind("destroy", this.remove);
+    },
+    render: function () {
+        var template;
+        var target_tag;
+        if (this.model.get('is_first') === 1) {
+            $("#message").append(_.template($("#server-tmpl-with-wrapper").text(), this.model.attributes));
+        } else {
+            $("#" + this.model.get('host')).html(_.template($("#server-tmpl").text(), this.model.attributes));
+        }
+        return this;
+    },
+    remove: function () {
+        $(this.el).remove();
+        return this;
+    }
+});
+
+var ServerListView = Backbone.View.extend({
+    initialize: function (options) {
+        _.bindAll(this, "resetItems", "appendItem", "removeItem");
+
+        this.collection.bind("reset", this.resetItems);
+        this.collection.bind("add", this.appendItem);
+        this.collection.bind("remove", this.removeItem);
+    },
+    resetItems: function (collection) {
+        collection.each(function (model) {
+            this.appendItem(model);
+        }, this);
+    },
+    appendItem: function (model) {
+        var view = new ServerView({model: model});
+        $(this.el).append(view.render().el);
+    },
+    removeItem: function (model) {
+        model.destroy();
+    }
+});
+
+var servers = new Servers();
+var serverListView = new ServerListView({collection: servers});
+
 (function() {
 
     var socket = io.connect(location.href);
 
-    var clients = new Array();
-
     socket.on('message', function(message){
+
         var json = jQuery.parseJSON(message);
 
-        var html = '<h2>HOST: ' + json.host + '</h2>';
+        var tmpServer,
+            uptime,
+            cpu,
+            free,
+            df,
+            netstat,
+            host = json.host;
 
-        html += '<div class="container-fluid"><div class="row-fluid"><div class="span12"><div class="row-fluid">';
+        console.log(json.host);
 
-        jQuery.each(json.result, function(key, data) {
+        jQuery.each(json.result, function(key, res) {
 
-            if (data.name === 'uptime') {
-                html += '<div class="span2">';
-                html += '[' + data.name + ']<br />';
-                html += 'uptime : ' + data.data.time  + '<br />';
-                html += 'loadavg: ' + data.data.avg1  + '<br />';
-                html += 'loadavg: ' + data.data.avg2  + '<br />';
-                html += 'loadavg: ' + data.data.avg3  + '<br />';
-                html += '</div>';
-
-            } else if (data.name === 'cpu') {
-                html += '<div class="span1">';
-                html += '[' + data.name + ']<br />';
-                html += 'user: ' + data.data.user  + '<br />';
-                html += 'nice: ' + data.data.nice  + '<br />';
-                html += 'sys : ' + data.data.sys   + '<br />';
-                html += 'idle: ' + data.data.idle  + '<br />';
-                html += '</div>';
-
-            } else if (data.name === 'free') {
-                html += '<div class="span2">';
-                html += '[' + data.name + ']<br />';
-                html += 'mem total : ' + data.data.mem.total + '<br />';
-                html += 'mem used  : ' + data.data.mem.used  + '<br />';
-                html += 'mem free  : ' + data.data.mem.free  + '<br />';
-                html += 'cache used: ' + data.data.cache.used + '<br />';
-                html += 'cache free: ' + data.data.cache.free + '<br />';
-                html += 'swap total: ' + data.data.swap.total + '<br />';
-                html += 'swap used : ' + data.data.swap.used  + '<br />';
-                html += 'swap free : ' + data.data.swap.free  + '<br />';
-                html += '</div>';
-
-            } else if (data.name === 'df') {
-
-                jQuery.each(data.data, function (key, elem) {
-                    html += '<div class="span2">';
-                    html += '[' + data.name + ']<br />';
-                    html += '(' + elem.dev + ')<br />';
-                    html += 'total     : ' + elem.total     + '<br />';
-                    html += 'used      : ' + elem.used      + '<br />';
-                    html += 'available : ' + elem.available + '<br />';
-                    html += 'use       : ' + elem.use       + '<br />';
-                    html += 'mount     : ' + elem.mount     + '<br />';
-                    html += '</div>';
-                });
-
-            } else if (data.name === 'netstat') {
-                html += '<div class="span1">';
-                html += '[' + data.name + ']<br />';
-                html += 'connections: ' + data.data.connections + '<br />';
-                html += '</div>';
+            if (res.name === 'uptime') {
+                uptime = res.data;
+            } else if (res.name === 'cpu') {
+                cpu = res.data;
+            } else if (res.name === 'free') {
+                free = res.data;
+            } else if (res.name === 'df') {
+                df = res.data;
+            } else if (res.name === 'netstat') {
+                netstat = res.data;
             }
-
         });
 
-        html += '</div></div></div></div>';
+        tmpServer = servers.find(function (server) {
+            return server.get('host') === host;
+        });
+        if (tmpServer) {
 
-        if (clients[json.host]) {
+            free.per = (free.mem.used / free.mem.total) * 100;
 
-            $('#' + json.host).html(html + '<br>');
+            tmpServer.set({
+                uptime: uptime,
+                cpu: cpu,
+                free: free,
+                df: df,
+                netstat: netstat,
+                is_first: 0
+            });
 
         } else {
 
-            html = '<div id="' + json.host + '">' + html + '</div>';
-            $("#message").append(html + '<br>');
+            free.per = (free.mem.used / free.mem.total) * 100;
+
+            servers.add(new Server({
+                host: host,
+                uptime: uptime,
+                cpu: cpu,
+                free: free,
+                df: df,
+                netstat: netstat,
+                is_first: 1
+            }));
         }
-
-        clients[json.host] = 1;
-
     });
 
     socket.on('disconnect', function(message){

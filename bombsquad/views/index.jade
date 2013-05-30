@@ -5,3 +5,36 @@ block content
   p Welcome to #{title}
 
   #message
+
+  <script type='text/template' id='server-tmpl'>
+  <div class='uptime'><%= uptime.time %> <%= uptime.avg1 %>, <%= uptime.avg2 %>, <%= uptime.avg3 %></div>
+  <div class='netstat'>TCP conn <%= netstat.connections %></div>
+  <div class='bar-str'><div class='cpu1' style='width: <%= cpu.user %>%'>&nbsp;</div>user:<%= cpu.user %></div>
+  <div class='bar-str'><div class='cpu2' style='width: <%= cpu.nice %>%'>&nbsp;</div>nice:<%= cpu.nice %></div>
+  <div class='bar-str'><div class='cpu3' style='width: <%= cpu.sys %>%'>&nbsp;</div>sys:<%= cpu.sys %></div>
+  <div class='bar-str'><div class='cpu4' style='width: <%= cpu.idle %>%'>&nbsp;</div>idle:<%= cpu.idle %></div>
+  <div class='bar-str'><div class='mem' style='width: <%= free.per %>%'>&nbsp;</div>mem:<%= free.mem.used %>(<%= free.cache.used %>)/<%= free.mem.total %></div>
+  <% _.each(df, function(disk) { %>
+  <div class='bar-str'><div class='disk' style='width: <%= disk.use %>'>&nbsp;</div><%= disk.dev %>:<%= disk.available %>/<%= disk.total %>->(<%= disk.mount %>)</div>
+  <% }); %>
+  </script>
+
+  <script type='text/template' id='server-tmpl-with-wrapper'>
+  <div class='sv-wrapper'>
+  <div class='sv-head'><h2><%= host %></h2></div>
+  <div class='sv-cont' id='<%= host %>'>
+  <div class='uptime'><%= uptime.time %> <%= uptime.avg1 %>, <%= uptime.avg2 %>, <%= uptime.avg3 %></div>
+  <div class='netstat'>TCP conn <%= netstat.connections %></div>
+  <div class='bar-str'><div class='cpu1' style='width: <%= cpu.user %>%'>&nbsp;</div>user:<%= cpu.user %></div>
+  <div class='bar-str'><div class='cpu2' style='width: <%= cpu.nice %>%'>&nbsp;</div>nice:<%= cpu.nice %></div>
+  <div class='bar-str'><div class='cpu3' style='width: <%= cpu.sys %>%'>&nbsp;</div>sys:<%= cpu.sys %></div>
+  <div class='bar-str'><div class='cpu4' style='width: <%= cpu.idle %>%'>&nbsp;</div>idle:<%= cpu.idle %></div>
+  <div class='bar-str'><div class='mem' style='width: <%= free.per %>%'>&nbsp;</div>mem:<%= free.mem.used %>(<%= free.cache.used %>)/<%= free.mem.total %></div>
+  <% _.each(df, function(disk) { %>
+  <div class='bar-str'><div class='disk' style='width: <%= disk.use %>'>&nbsp;</div><%= disk.dev %>:<%= disk.available %>/<%= disk.total %>->(<%= disk.mount %>)</div>
+  <% }); %>
+  </div>
+  </div>
+  </div>
+  </script>
+
