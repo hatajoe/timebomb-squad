@@ -4,12 +4,34 @@ use strict;
 use warnings;
 
 my $cmd = "node app.js >log 2>&1";
+my $end = 0;
+
 
 # endress reconnect
-while (1) {
+while (!$end) {
 
-    my $ret = system($cmd);
+    my $pid = fork();
 
-    sleep(1);
+    if ($pid) {
+
+        $SIG{INT} = sub {
+            kill 9, $pid if ($pid);
+            $end = 1;
+        };
+
+        # parent
+        wait();
+
+    } elsif (defined $pid) {
+
+        # child
+        my $ret = system($cmd);
+        exit;
+
+    } else {
+        die "failed to fork\n";
+    }
+
 }
 
+print "finish\n";
