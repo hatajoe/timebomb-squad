@@ -1,6 +1,3 @@
-/**
- * timebomb.js
- */
 
 var util = require('util'),
     fs   = require('fs');
@@ -33,6 +30,7 @@ socket.on('connect', function (){
         console.log('disconnect ' + url);
 
         socket.disconnect();
+        process.exit(0);
     });
 
     setInterval(function () {
