@@ -135,8 +135,4 @@ var serverListView = new ServerListView({collection: servers});
         }
     });
 
-    socket.on('disconnect', function(message){
-        $("#message").append('disconnected');
-    });
-
 }());
