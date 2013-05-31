@@ -41,9 +41,9 @@ console.log('Server running port at ' + port);
 
 io.sockets.on('connection', function(client) {
     console.log('connection');
+
 	client.on('message', function(msg) {
 
-		client.send(msg);
 		client.broadcast.emit('message', msg);
 	});
 });
