@@ -11,7 +11,6 @@ var url = config.server || 'localhost:3000';
 var interval = config.interval || 1000;
 
 var async  = require('async'),
-    spawn  = require('child_process').spawn,
     exec   = require('child_process').exec,
     os     = require('os'),
     client = require('socket.io-client'),
@@ -33,8 +32,8 @@ socket.on('connect', function (){
 
         console.log('disconnect ' + url);
 
-        socket.disconnect();
-        process.exit(0);
+        // reconnect
+        socket = client.connect(url);
     });
 
     setInterval(function () {
@@ -171,15 +170,12 @@ socket.on('connect', function (){
 
                 var parser = require('./parser/netstat.js');
                 var netstat = exec('netstat -an | wc -l', []);
-                // var netstat = exec('netstat', ['-an']),
-                //     wc      = spawn('wc'     , ['-l']);
 
                 netstat.stdout.on('data', function(data) {
                     callback(null, {
                         name: 'netstat',
                         data: parser.parse(data)
                     });
-                    // wc.stdin.write(data);
                 });
 
                 netstat.stderr.on('data', function(data) {
@@ -190,29 +186,7 @@ socket.on('connect', function (){
                     if (code !== 0) {
                         console.log('netstat process exited with code ' + code);
                     }
-                    // wc.stdin.end();
                 });
-
-                // wc.stdout.on('data', function(data) {
-                //     callback(null, {
-                //         name: 'netstat',
-                //         data: data.toString()
-                //     });
-                // });
-
-                // wc.stderr.on('data', function(data) {
-                //     console.log('wc stderr: ' + data);
-                //     callback(null, {
-                //         name: 'netstat',
-                //         data: data
-                //     });
-                // });
-
-                // wc.on('exit', function(code) {
-                //     if (code !== 0) {
-                //         console.log('wc process exited with code ' + code);
-                //     }
-                // });
 
             }], function(err, results) {
 
@@ -221,7 +195,6 @@ socket.on('connect', function (){
                     result: results
                 };
                 var serialized = JSON.stringify(res);
-                // console.log(serialized);
 
                 socket.send(serialized);
             });
