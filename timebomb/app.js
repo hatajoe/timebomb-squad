@@ -33,7 +33,13 @@ socket.on('connect', function (){
         console.log('disconnect ' + url);
 
         // reconnect
-        socket = client.connect(url);
+        if (socket.socket.connected === false) {
+
+            if (socket.socket.connecting === false && socket.socket.reconnecting === false) {
+                console.log('reconnect ' + url);
+                socket = client.connect(url);
+            }
+        }
     });
 
     setInterval(function () {
