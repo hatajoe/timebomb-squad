@@ -18,6 +18,7 @@ var async  = require('async'),
 
 
 var PREV_CPU_USAGE;
+var timer;
 
 process.on('uncaughtException', function (err) {
     console.log('uncaughtException => ' + err);
@@ -28,21 +29,7 @@ socket.on('connect', function (){
     console.log('connect ' + url);
     console.log('check interval ' + interval);
 
-    socket.on('disconnect', function () {
-
-        console.log('disconnect ' + url);
-
-        // reconnect
-        if (socket.socket.connected === false) {
-
-            if (socket.socket.connecting === false && socket.socket.reconnecting === false) {
-                console.log('reconnect ' + url);
-                socket = client.connect(url);
-            }
-        }
-    });
-
-    setInterval(function () {
+    timer = setInterval(function () {
 
         async.parallel([
 
@@ -208,3 +195,15 @@ socket.on('connect', function (){
     }, interval);
 
 });
+
+socket.on('disconnect', function () {
+
+    console.log('disconnect ' + url);
+
+    clearInterval(timer);
+    socket.disconnect();
+
+    // reconnect
+    socket = client.connect(url);
+});
+
