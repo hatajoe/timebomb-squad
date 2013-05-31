@@ -189,7 +189,6 @@ socket.on('connect', function (){
                 };
                 var serialized = JSON.stringify(res);
 
-                console.log(socket.socket.connected);
                 socket.send(serialized);
             });
 
@@ -201,6 +200,10 @@ socket.on('disconnect', function () {
 
     console.log('disconnect ' + url);
     clearInterval(timer);
-    socket.disconnect();
+
+    if (socket.socket.connected === false) {
+        socket = client.connect(url);
+        console.log('reconnect ' + url + socket.socket.connected);
+    }
 });
 
