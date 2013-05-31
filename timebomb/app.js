@@ -204,6 +204,9 @@ socket.on('disconnect', function () {
     socket.disconnect();
 
     // reconnect
-    socket = client.connect(url);
+    while (socket.socket.connected === false) {
+        console.log('reconnecting ' + url);
+        socket = client.connect(url);
+    }
 });
 
