@@ -189,6 +189,7 @@ socket.on('connect', function (){
                 };
                 var serialized = JSON.stringify(res);
 
+                console.log(socket.socket.connected);
                 socket.send(serialized);
             });
 
@@ -199,14 +200,7 @@ socket.on('connect', function (){
 socket.on('disconnect', function () {
 
     console.log('disconnect ' + url);
-
     clearInterval(timer);
     socket.disconnect();
-
-    // reconnect
-    while (socket.socket.connected === false) {
-        console.log('reconnecting ' + url);
-        socket = client.connect(url);
-    }
 });
 
