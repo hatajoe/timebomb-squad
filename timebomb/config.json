@@ -1,4 +1,4 @@
 {
-    "server": "http://timebombsquad.herokuapp.com/",
+    "server": "http://localhost:3000",
     "interval": 1000
 }

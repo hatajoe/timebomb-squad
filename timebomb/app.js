@@ -20,6 +20,10 @@ var async  = require('async'),
 
 var PREV_CPU_USAGE;
 
+process.on('uncaughtException', function (err) {
+    console.log('uncaughtException => ' + err);
+});
+
 socket.on('connect', function (){
 
     console.log('connect ' + url);
@@ -219,15 +223,7 @@ socket.on('connect', function (){
                 var serialized = JSON.stringify(res);
                 // console.log(serialized);
 
-                if (!socket) {
-                    socket = client.connect(url);
-                    console.log('reconnect ' + url);
-                    console.log('check interval ' + interval);
-                }
-
-                if (socket) {
-                    socket.send(serialized);
-                }
+                socket.send(serialized);
             });
 
     }, interval);
