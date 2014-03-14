@@ -3,7 +3,7 @@
   "version": "0.0.0",
   "dependencies": {
     "jquery": "~2.0.0",
-    "bootstrap": "http://twitter.github.com/bootstrap/assets/bootstrap.zip",
+    "bootstrap": "~2.3.2",
     "underscore": "~1.4.4",
     "json2": "latest",
     "backbone": "~1.0.0"
