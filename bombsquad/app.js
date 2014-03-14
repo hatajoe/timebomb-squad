@@ -3,17 +3,13 @@
  * Module dependencies.
  */
 
-var express = require('express')
-  , routes = require('./routes')
-  , user = require('./routes/user')
-  , http = require('http');
+var express = require('express');
+var routes = require('./routes');
+var path = require('path');
+var app = express();
 
-http.globalAgent.maxSockets = 1024;
-
-var app = express()
-  , server = http.createServer(app)
-  , io = require('socket.io').listen(server)
-  , path = require('path');
+var bombsquad = require('./lib/bombsquad');
+var server;
 
 // all environments
 app.set('port', process.env.PORT || 3000);
@@ -33,17 +29,7 @@ if ('development' == app.get('env')) {
 }
 
 app.get('/', routes.index);
-app.get('/users', user.list);
+app.post('/', routes.index);
 
-var port = process.env.PORT || 3000;
-server.listen(port);
-console.log('Server running port at ' + port);
+bombsquad.observe(app);
 
-io.sockets.on('connection', function(client) {
-    console.log('connection');
-
-	client.on('message', function(msg) {
-
-		client.broadcast.emit('message', msg);
-	});
-});

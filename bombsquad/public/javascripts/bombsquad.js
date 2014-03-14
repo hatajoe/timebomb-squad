@@ -76,7 +76,7 @@ var serverListView = new ServerListView({collection: servers});
 
     socket.on('message', function(message){
 
-        var json = jQuery.parseJSON(message);
+        var json = jQuery.parseJSON(message.message);
 
         var tmpServer,
             uptime,
